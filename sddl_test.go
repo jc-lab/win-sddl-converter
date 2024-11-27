@@ -17,8 +17,9 @@ func TestParseSDDL(t *testing.T) {
 			"C:/testdir-1",
 			"O:S-1-5-21-920909269-1353440977-3059239504-1001G:S-1-5-21-920909269-1353440977-3059239504-513D:AI(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;OICIID;0x1200a9;;;BU)(A;ID;0x1301bf;;;AU)(A;OICIIOID;SDGXGWGR;;;AU)",
 			&SecurityDescriptor{
-				Owner: "S-1-5-21-920909269-1353440977-3059239504-1001",
-				Group: "S-1-5-21-920909269-1353440977-3059239504-513",
+				Control: SE_DACL_AUTO_INHERITED,
+				Owner:   "S-1-5-21-920909269-1353440977-3059239504-1001",
+				Group:   "S-1-5-21-920909269-1353440977-3059239504-513",
 				DiscretionaryAcl: &Acl{
 					AclRevision: 2,
 					Aces: []Ace{
@@ -145,8 +146,9 @@ func TestParseSDDL(t *testing.T) {
 			"posix 0764",
 			"O:BAG:SYD:PAI(A;OICI;FA;;;CO)(A;OICI;GWGR;;;CG)(A;OICI;GRGX;;;WD)",
 			&SecurityDescriptor{
-				Owner: "S-1-5-32-544",
-				Group: "S-1-5-18",
+				Control: SE_DACL_PROTECTED | SE_DACL_AUTO_INHERITED,
+				Owner:   "S-1-5-32-544",
+				Group:   "S-1-5-18",
 				DiscretionaryAcl: &Acl{
 					AclRevision: 2,
 					Aces: []Ace{
