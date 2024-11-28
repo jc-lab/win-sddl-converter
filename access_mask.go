@@ -1,20 +1,37 @@
 package winsddlconverter
 
 // Constants for access rights
+// See https://www.coopware.in2.info/_ntfsacl_ht.htm
+
+// Special Permissions
 const (
-	DELETE                   = 0x00010000
-	READ_CONTROL             = 0x00020000
-	WRITE_DAC                = 0x00040000
-	WRITE_OWNER              = 0x00080000
+	FILE_READ_DATA           = SYNCHRONIZE | 0x00000001
+	FILE_WRITE_DATA          = SYNCHRONIZE | 0x00000002
+	FILE_APPEND_DATA         = SYNCHRONIZE | 0x00000004
+	FILE_READ_EA             = SYNCHRONIZE | 0x00000008
+	FILE_WRITE_EA            = SYNCHRONIZE | 0x00000010
+	FILE_EXECUTE             = SYNCHRONIZE | 0x00000020
+	FILE_DELETE_CHILD        = SYNCHRONIZE | 0x000000040
+	FILE_READ_ATTRIBUTES     = SYNCHRONIZE | 0x00000080
+	FILE_WRITE_ATTRIBUTES    = SYNCHRONIZE | 0x00000100
+	DELETE                   = 0x00010000 // SD
+	READ_CONTROL             = 0x00020000 // RC
+	WRITE_DAC                = 0x00040000 // WD
+	WRITE_OWNER              = 0x00080000 // WO
 	SYNCHRONIZE              = 0x00100000
 	STANDARD_RIGHTS_REQUIRED = DELETE | READ_CONTROL | WRITE_DAC | WRITE_OWNER
+	FILE_READ_ACCESS         = SYNCHRONIZE | READ_CONTROL | FILE_READ_DATA | FILE_READ_EA | FILE_READ_ATTRIBUTES // "FR"
 	FILE_ALL_ACCESS          = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1FF
 	ACCESS_SYSTEM_SECURITY   = 0x01000000
 	MAXIMUM_ALLOWED          = 0x02000000
-	GENERIC_ALL              = 0x10000000
-	GENERIC_EXECUTE          = 0x20000000
-	GENERIC_WRITE            = 0x40000000
-	GENERIC_READ             = 0x80000000
+)
+
+// Generic Permission
+const (
+	GENERIC_ALL     = 0x10000000
+	GENERIC_EXECUTE = 0x20000000
+	GENERIC_WRITE   = 0x40000000
+	GENERIC_READ    = 0x80000000
 )
 
 func ParseAccessMask(mask uint32) AccessMaskDetail {
@@ -25,6 +42,9 @@ func ParseAccessMask(mask uint32) AccessMaskDetail {
 	if maskCurrent&FILE_ALL_ACCESS == FILE_ALL_ACCESS {
 		flags = append(flags, "FA")
 		maskCurrent &= bitNot(FILE_ALL_ACCESS)
+	} else if maskCurrent&FILE_ALL_ACCESS == FILE_READ_ACCESS {
+		flags = append(flags, "FR")
+		maskCurrent &= bitNot(FILE_READ_ACCESS)
 	} else {
 		// Standard rights
 		if maskCurrent&DELETE != 0 {
@@ -92,6 +112,8 @@ func EncodeAccessMask(detail *AccessMaskDetail) uint32 {
 		switch flag {
 		case "FA":
 			mask |= FILE_ALL_ACCESS
+		case "FR":
+			mask |= FILE_READ_ACCESS
 		case "SD":
 			mask |= DELETE
 		case "RC":
