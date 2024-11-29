@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -192,7 +191,6 @@ func marshalAcl(acl *Acl) ([]byte, error) {
 	// Placeholder for ACE count
 	aceCountOffset := buffer.Len()
 	_ = aceCountOffset
-	log.Printf("acl.Aces: %d: %+v", len(acl.Aces), acl.Aces)
 	err = binary.Write(&buffer, binary.LittleEndian, uint16(len(acl.Aces)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to write ACE count: %v", err)
